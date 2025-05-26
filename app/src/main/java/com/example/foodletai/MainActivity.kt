@@ -1,26 +1,39 @@
-package com.example.foodletai
+package com.example.foodletai // Your package name will be here
 
 import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
 import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.foundation.layout.padding
-import androidx.compose.material3.Scaffold
+import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.tooling.preview.Preview
-import com.example.foodletai.View.View
-import com.example.foodletai.ui.theme.FOODLETAITheme
+import com.example.foodletai.View.HomePage
+import com.example.foodletai.ui.theme.FOODLETAITheme // Your theme name will be here
 
-import com.example.foodletai.ViewModel.ViewModel
+import com.example.foodletai.ViewModel.MainViewModel
 
 class MainActivity : ComponentActivity() {
+    private val viewModel: MainViewModel = MainViewModel();
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState);
-        val myViewModel:ViewModel = ViewModel();
+
         enableEdgeToEdge();
+
+        setContent {
+            FOODLETAITheme{
+                Surface(
+                    modifier = Modifier.fillMaxSize(),
+                    color = Color(0xFF191919)
+                ) {
+                    HomePage(modifier = Modifier.fillMaxSize(),viewModel = viewModel )
+                }
+            }
+        }
     }
 }
 
