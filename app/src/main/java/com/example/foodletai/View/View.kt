@@ -31,6 +31,7 @@ import androidx.compose.material3.TextFieldDefaults
 import androidx.compose.ui.graphics.Color
 import androidx.compose.foundation.border
 import androidx.compose.ui.text.style.TextAlign
+import androidx.compose.runtime.collectAsState
 
 @Composable
 fun HomePage(modifier: Modifier = Modifier, viewModel: MainViewModel) {
@@ -45,7 +46,7 @@ fun HomePage(modifier: Modifier = Modifier, viewModel: MainViewModel) {
     ) {
         Text(text = "Ai Assistant Answer",modifier = Modifier, color = Color.White, textAlign = TextAlign.Center)
 
-        var godAnswer by remember { mutableStateOf(view) }
+        val godAnswer by viewModel.answer.collectAsState()
         Text(
             text = godAnswer,
             modifier = Modifier

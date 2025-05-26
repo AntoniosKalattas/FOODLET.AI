@@ -14,7 +14,11 @@ class MainViewModel:ViewModel() {
     val answer: StateFlow<String> = _godAnswer
 
     fun addFoodDescription(foodDescription: String) {
-        _godAnswer.value = model.askGod(viewModelScope, foodDescription);
+        model.askGod(viewModelScope, foodDescription) { result ->
+            Log.d("API", "Response: $result")
+            _godAnswer.value = result
+        }
     }
+
 
 }
