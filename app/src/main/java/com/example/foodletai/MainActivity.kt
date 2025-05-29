@@ -18,28 +18,17 @@ import com.example.foodletai.ui.theme.FOODLETAITheme
 import android.Manifest
 import android.content.pm.PackageManager
 import androidx.activity.result.contract.ActivityResultContracts
+import androidx.activity.viewModels
 import com.example.foodletai.ViewModel.MainViewModel
+import kotlin.getValue
 
 class MainActivity : ComponentActivity() {
-    private var readPermission:Boolean = false;
-    private var writePermission:Boolean = false;
+    private val viewModel: MainViewModel by viewModels()
 
-    private lateinit var permissionLauncher: ActivityResultLauncher<Array<String>>
-
-
-    private val viewModel: MainViewModel = MainViewModel();
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState);
 
         enableEdgeToEdge();
-        // 1. Initialize the permission launcher
-        permissionLauncher = registerForActivityResult(ActivityResultContracts.RequestMultiplePermissions()) { permissions ->
-            readPermission = permissions[Manifest.permission.READ_EXTERNAL_STORAGE] ?: false
-            writePermission = permissions[Manifest.permission.WRITE_EXTERNAL_STORAGE] ?: false
-        }
-
-        // 2. Request permissions
-        requestPermissions()
 
         setContent {
             FOODLETAITheme{
@@ -52,36 +41,6 @@ class MainActivity : ComponentActivity() {
             }
         }
     }
-
-    private fun requestPermissions() {
-        val permissionsToRequest = mutableListOf<String>()
-
-        val hasReadPermission = ContextCompat.checkSelfPermission(
-            this,
-            Manifest.permission.READ_EXTERNAL_STORAGE
-        ) == PackageManager.PERMISSION_GRANTED
-
-        val hasWritePermission = ContextCompat.checkSelfPermission(
-            this,
-            Manifest.permission.WRITE_EXTERNAL_STORAGE
-        ) == PackageManager.PERMISSION_GRANTED
-
-        writePermission = hasWritePermission
-        readPermission = hasReadPermission
-
-        if (!hasWritePermission) {
-            permissionsToRequest.add(Manifest.permission.WRITE_EXTERNAL_STORAGE)
-        }
-        if (!hasReadPermission) {
-            permissionsToRequest.add(Manifest.permission.READ_EXTERNAL_STORAGE)
-        }
-
-        if (permissionsToRequest.isNotEmpty()) {
-            permissionLauncher.launch(permissionsToRequest.toTypedArray())
-        }
-    }
-
-
 }
 
 @Composable

@@ -14,6 +14,7 @@ import android.app.Application
 import android.content.Context
 import android.content.SharedPreferences
 import androidx.lifecycle.AndroidViewModel
+import androidx.lifecycle.application
 
 
 data class LastFood(
@@ -24,9 +25,9 @@ data class LastFood(
     val fat: String
 )
 
-class MainViewModel:ViewModel() {
+class MainViewModel(application: Application):AndroidViewModel(application = Application()) {
     private val model = Model();
-    private val userData = userData();
+    private val userData = userData(application);
 
     //AI answer
     private val _godAnswer = MutableStateFlow("ChatGPT-3.5")
@@ -41,18 +42,12 @@ class MainViewModel:ViewModel() {
     val totalFat =     userData.getFat()
     val totalCarbs =   userData.getCarbs()
     val totalProtein = userData.getProtein()
-    val totalFiber =   userData.getFiber()
-    val totalSugar =   userData.getSugar()
     private val _consumedFat =     MutableStateFlow(userData.getConsumedFat())
     private val _consumedProtein = MutableStateFlow(userData.getConsumedProtein())
-    private val _consumedFiber =   MutableStateFlow(userData.getConsumedFiber())
-    private val _consumedSugar =   MutableStateFlow(userData.getConsumedSugar())
     private val _consumedCarbs =   MutableStateFlow(userData.getConsumedCarbs())
     val consumedProtein:StateFlow<Int> =  _consumedProtein
     val consumedFat:StateFlow<Int> =      _consumedFat
     val consumedCarbs:StateFlow<Int> =    _consumedCarbs
-    val consumedFiber:StateFlow<Int> =    _consumedFiber
-    val consumedSugar:StateFlow<Int> =    _consumedSugar
     var lastFood: LastFood? = null
 
 
@@ -140,15 +135,6 @@ class MainViewModel:ViewModel() {
 
     fun rejectLastFood(){
         lastFood = null
-    }
-
-    fun storeData(){
-        val sharedPref = getSharedPreferences("foodlet_prefs", MODE_PRIVATE)
-        sharedPref.edit().putInt("calorie_goal", 2000).apply()
-
-    }
-    fun loadData(){
-
     }
 
     fun addConsumedCaloriers(caloriers:Int){
