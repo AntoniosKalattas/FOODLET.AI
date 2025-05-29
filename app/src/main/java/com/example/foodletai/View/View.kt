@@ -1,6 +1,5 @@
 package com.example.foodletai.View
 
-import android.util.Log
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
@@ -9,8 +8,6 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.text.input.TextFieldLineLimits
-import androidx.compose.foundation.text.input.rememberTextFieldState
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Check
 import androidx.compose.material3.Button
@@ -32,6 +29,7 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.width
+import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material.icons.filled.Edit
 import androidx.compose.material.icons.filled.Settings
 import androidx.compose.ui.text.style.TextAlign
@@ -39,13 +37,6 @@ import androidx.compose.runtime.collectAsState
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.sp
 import androidx.compose.material3.ButtonDefaults
-import androidx.compose.ui.text.style.TextOverflow
-import androidx.compose.material3.*
-import androidx.compose.material.icons.filled.Settings
-import androidx.compose.material.icons.filled.ArrowBack
-import androidx.compose.material3.Icon
-import androidx.compose.material3.IconButton
-
 
 
 @Composable
@@ -72,7 +63,7 @@ fun HomePage(modifier: Modifier = Modifier, viewModel: MainViewModel, onSettings
             .padding(16.dp),
         horizontalAlignment = Alignment.CenterHorizontally
     ) {
-        // Title: FOODLET.AI
+        // Title: FOOD LET.AI
         Row(
             modifier = Modifier
                 .fillMaxWidth()
@@ -88,7 +79,7 @@ fun HomePage(modifier: Modifier = Modifier, viewModel: MainViewModel, onSettings
                 verticalAlignment = Alignment.CenterVertically
             ) {
                 Text(
-                    text = "FOODLET",
+                    text = "FOOD LET",
                     color = Color.White,
                     fontSize = 36.sp,
                     fontWeight = FontWeight.Bold,
@@ -115,9 +106,9 @@ fun HomePage(modifier: Modifier = Modifier, viewModel: MainViewModel, onSettings
             // Calories Row
             Row(modifier = Modifier.padding(5.dp)) {
                 val calories by viewModel.consumedCaloriers.collectAsState()
-                val totalCalorier = viewModel.totalCalories.collectAsState().value
+                val totalCalories = viewModel.totalCalories.collectAsState().value
                 Text(
-                    text = "Calories: ${calories.toString()}/${totalCalorier}",
+                    text = "Calories: ${calories}/${totalCalories}",
                     color = Color.White,
                     fontSize = 25.sp,
                     fontWeight = FontWeight.Bold,
@@ -138,7 +129,7 @@ fun HomePage(modifier: Modifier = Modifier, viewModel: MainViewModel, onSettings
 
             val protein by viewModel.consumedProtein.collectAsState()
             Text(
-                text = "Protein: ${protein.toString()}/${viewModel.totalProtein.collectAsState().value}",
+                text = "Protein: ${protein}/${viewModel.totalProtein.collectAsState().value}",
                 modifier = Modifier.padding(5.dp),
                 color = Color.White,
                 fontWeight = FontWeight.Bold,
@@ -147,7 +138,7 @@ fun HomePage(modifier: Modifier = Modifier, viewModel: MainViewModel, onSettings
 
             val carbs by viewModel.consumedCarbs.collectAsState()
             Text(
-                text = "Carbs: ${carbs.toString()}/${viewModel.totalCarbs.collectAsState().value}",
+                text = "Carbs: ${carbs}/${viewModel.totalCarbs.collectAsState().value}",
                 modifier = Modifier.padding(5.dp),
                 color = Color.White,
                 fontWeight = FontWeight.Bold,
@@ -156,7 +147,7 @@ fun HomePage(modifier: Modifier = Modifier, viewModel: MainViewModel, onSettings
 
             val fat by viewModel.consumedFat.collectAsState()
             Text(
-                text = "Fat: ${fat.toString()}/${viewModel.totalFat.collectAsState().value}",
+                text = "Fat: ${fat}/${viewModel.totalFat.collectAsState().value}",
                 modifier = Modifier.padding(5.dp),
                 color = Color.White,
                 fontWeight = FontWeight.Bold,
@@ -297,7 +288,7 @@ fun SettingsPage(modifier: Modifier = Modifier, viewModel: MainViewModel, onBack
         }
         // Calories and Macros Settings
 
-        //Calries Goal
+        //Calories Goal
         EditableSettingRow(
             label = "Calories Goal",
             value = viewModel.totalCalories.collectAsState().value.toString(),
@@ -380,7 +371,7 @@ fun BackButton(onClick: () -> Unit, modifier: Modifier = Modifier) {
         modifier = modifier
     ) {
         Icon(
-            imageVector = Icons.Filled.ArrowBack,
+            imageVector = Icons.AutoMirrored.Filled.ArrowBack,
             contentDescription = "Back",
             tint = Color.White
         )
