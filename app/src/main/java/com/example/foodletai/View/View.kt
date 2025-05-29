@@ -42,6 +42,10 @@ import androidx.compose.material3.ButtonDefaults
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.material3.*
 import androidx.compose.material.icons.filled.Settings
+import androidx.compose.material.icons.filled.ArrowBack
+import androidx.compose.material3.Icon
+import androidx.compose.material3.IconButton
+
 
 
 @Composable
@@ -49,7 +53,7 @@ fun MainScreen(modifier: Modifier = Modifier, viewModel: MainViewModel) {
     var showSettings by remember { mutableStateOf(false) }
 
     if (showSettings) {
-        SettingsPage(modifier = modifier, viewModel = viewModel)
+        SettingsPage(modifier = modifier, viewModel = viewModel, onBack = { showSettings = false })
     } else {
         HomePage(
             modifier = modifier,
@@ -270,7 +274,7 @@ fun GearButton(onClick: () -> Unit, modifier: Modifier = Modifier) {
 
 
 @Composable
-fun SettingsPage(modifier: Modifier = Modifier, viewModel: MainViewModel) {
+fun SettingsPage(modifier: Modifier = Modifier, viewModel: MainViewModel, onBack: () -> Unit) {
     Column(
         modifier = modifier
             .fillMaxSize()
@@ -278,12 +282,19 @@ fun SettingsPage(modifier: Modifier = Modifier, viewModel: MainViewModel) {
         horizontalAlignment = Alignment.CenterHorizontally,
         verticalArrangement = Arrangement.Center
     ) {
-        Text(
-            text = "Settings",
-            color = Color.White,
-            fontSize = 36.sp,
-            fontWeight = FontWeight.Bold
-        )
+        Row(
+            modifier = Modifier.fillMaxWidth(),
+            verticalAlignment = Alignment.CenterVertically
+        ) {
+            BackButton(onClick = onBack)
+            Spacer(modifier = Modifier.width(8.dp))
+            Text(
+                text = "Settings",
+                color = Color.White,
+                fontSize = 36.sp,
+                fontWeight = FontWeight.Bold
+            )
+        }
         // Calories and Macros Settings
 
         //Calries Goal
@@ -359,5 +370,19 @@ fun EditableSettingRow(label: String, value: String, onValueChange: (String) -> 
             )
             PenButton(onClick = { isEditing = true })
         }
+    }
+}
+
+@Composable
+fun BackButton(onClick: () -> Unit, modifier: Modifier = Modifier) {
+    IconButton(
+        onClick = onClick,
+        modifier = modifier
+    ) {
+        Icon(
+            imageVector = Icons.Filled.ArrowBack,
+            contentDescription = "Back",
+            tint = Color.White
+        )
     }
 }
