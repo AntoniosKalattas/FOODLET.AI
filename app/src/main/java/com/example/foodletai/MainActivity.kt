@@ -19,6 +19,7 @@ import android.Manifest
 import android.content.pm.PackageManager
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.activity.viewModels
+import com.example.foodletai.View.MainScreen
 import com.example.foodletai.ViewModel.MainViewModel
 import kotlin.getValue
 
@@ -36,7 +37,7 @@ class MainActivity : ComponentActivity() {
                     modifier = Modifier.fillMaxSize(),
                     color = Color(0xFF191919)
                 ) {
-                    HomePage(modifier = Modifier.fillMaxSize(),viewModel = viewModel )
+                    MainScreen(modifier = Modifier.fillMaxSize(),viewModel = viewModel )
                 }
             }
         }

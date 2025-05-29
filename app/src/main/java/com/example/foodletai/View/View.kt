@@ -32,15 +32,35 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.width
+import androidx.compose.material.icons.filled.Settings
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.runtime.collectAsState
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.sp
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.ui.text.style.TextOverflow
+import androidx.compose.material3.*
+import androidx.compose.material.icons.filled.Settings
+
 
 @Composable
-fun HomePage(modifier: Modifier = Modifier, viewModel: MainViewModel) {
+fun MainScreen(modifier: Modifier = Modifier, viewModel: MainViewModel) {
+    var showSettings by remember { mutableStateOf(false) }
+
+    if (showSettings) {
+        SettingsPage(modifier = modifier, viewModel = viewModel)
+    } else {
+        HomePage(
+            modifier = modifier,
+            viewModel = viewModel,
+            onSettingsClick = { showSettings = true }
+        )
+    }
+}
+
+
+@Composable
+fun HomePage(modifier: Modifier = Modifier, viewModel: MainViewModel, onSettingsClick: () -> Unit) {
     Column(
         modifier = modifier
             .fillMaxSize()
@@ -49,25 +69,37 @@ fun HomePage(modifier: Modifier = Modifier, viewModel: MainViewModel) {
     ) {
         // Title: FOODLET.AI
         Row(
-            horizontalArrangement = Arrangement.Center,
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(top = 8.dp, bottom = 16.dp),
             verticalAlignment = Alignment.CenterVertically,
-            modifier = Modifier.padding(top = 8.dp, bottom = 16.dp)
+            horizontalArrangement = Arrangement.SpaceBetween
         ) {
-            Text(
-                text = "FOODLET",
-                color = Color.White,
-                fontSize = 36.sp,
-                fontWeight = FontWeight.Bold,
-                textAlign = TextAlign.Center
-            )
-            Spacer(modifier = Modifier.width(4.dp))
-            Text(
-                text = ".AI",
-                color = Color.Green,
-                fontSize = 36.sp,
-                fontWeight = FontWeight.Bold,
-                textAlign = TextAlign.Center
-            )
+            Spacer(modifier = Modifier.width(48.dp)) // Placeholder for symmetry
+
+            Row(
+                modifier = Modifier.weight(1f),
+                horizontalArrangement = Arrangement.Center,
+                verticalAlignment = Alignment.CenterVertically
+            ) {
+                Text(
+                    text = "FOODLET",
+                    color = Color.White,
+                    fontSize = 36.sp,
+                    fontWeight = FontWeight.Bold,
+                    textAlign = TextAlign.Center
+                )
+                Spacer(modifier = Modifier.width(4.dp))
+                Text(
+                    text = ".AI",
+                    color = Color.Green,
+                    fontSize = 36.sp,
+                    fontWeight = FontWeight.Bold,
+                    textAlign = TextAlign.Center
+                )
+            }
+
+            GearButton(onClick = onSettingsClick)
         }
 
         // Calories and Macros Section
@@ -230,5 +262,63 @@ fun HomePage(modifier: Modifier = Modifier, viewModel: MainViewModel) {
                 .padding(horizontal = 16.dp, vertical = 8.dp)
         )
         Spacer(modifier = Modifier.height(40.dp))
+    }
+}
+
+@Composable
+fun GearButton(onClick: () -> Unit, modifier: Modifier = Modifier) {
+    IconButton(
+        onClick = onClick,
+        modifier = modifier
+    ) {
+        Icon(
+            imageVector = Icons.Filled.Settings,
+            contentDescription = "Settings",
+            tint = Color.Gray
+        )
+    }
+}
+
+
+@Composable
+fun SettingsPage(modifier: Modifier = Modifier, viewModel: MainViewModel) {
+    Column(
+        modifier = modifier
+            .fillMaxSize()
+            .padding(16.dp),
+        horizontalAlignment = Alignment.CenterHorizontally,
+        verticalArrangement = Arrangement.Center
+    ) {
+        Text(
+            text = "Settings",
+            color = Color.White,
+            fontSize = 36.sp,
+            fontWeight = FontWeight.Bold
+        )
+        Text(
+            text="Calories Goal: ${viewModel.totalCalories}",
+            color = Color.White,
+            fontSize = 36.sp,
+            fontWeight = FontWeight.Bold
+        )
+        Text(
+            text = "Protein Goal: ${viewModel.totalProtein}",
+            color = Color.White,
+            fontSize = 36.sp,
+            fontWeight = FontWeight.Bold
+        )
+        Text(
+            text = "Carbs Goal: ${viewModel.totalCarbs}",
+            color = Color.White,
+            fontSize = 36.sp,
+            fontWeight = FontWeight.Bold
+        )
+        Text(
+            text = "Fat Goal: ${viewModel.totalFat}",
+            color = Color.White,
+            fontSize = 36.sp,
+            fontWeight = FontWeight.Bold
+        )
+        Spacer(modifier = Modifier.height(20.dp))
     }
 }
