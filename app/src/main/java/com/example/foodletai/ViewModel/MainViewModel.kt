@@ -13,6 +13,8 @@ import kotlinx.serialization.json.*
 import android.app.Application
 import android.content.Context
 import android.content.SharedPreferences
+import android.os.Build
+import androidx.annotation.RequiresApi
 import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.application
 
@@ -60,7 +62,9 @@ class MainViewModel(application: Application):AndroidViewModel(application = App
 
 
 
+    @RequiresApi(Build.VERSION_CODES.O)
     fun addFoodDescription(foodDescription: String) {
+        model.checkDay(userData)
         lastFood=null
         if(model.isFoodRelated(foodDescription)) {
             model.askGod(viewModelScope, foodDescription) { result ->

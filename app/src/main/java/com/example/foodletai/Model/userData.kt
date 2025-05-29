@@ -60,6 +60,7 @@ class userData(context: Context) {
         consumedProtein = sharedPref.getInt("consumedProtein", 0)
     }
 
+    fun resetDayData(){}
     init{
         loadState();// start loading the state
     }
