@@ -34,14 +34,22 @@ class MainViewModel(application: Application):AndroidViewModel(application = App
     val answer: StateFlow<String> = _godAnswer
 
     //calories
-    val totalCalories = userData.getTotalCalories()
+    val _totalCalories = MutableStateFlow(userData.getTotalCalories())
+    val totalCalories: StateFlow<Int> = _totalCalories
+
+    val _totalFat = MutableStateFlow(userData.getFat())
+    val totalFat: StateFlow<Int> = _totalFat
+
+    val _totalCarbs = MutableStateFlow(userData.getCarbs())
+    val totalCarbs: StateFlow<Int> = _totalCarbs
+
+    val _totalProtein = MutableStateFlow(userData.getProtein())
+    val totalProtein: StateFlow<Int> = _totalProtein
+
     val _consumedCaloriers = MutableStateFlow(userData.getConsumedCaloriers())
     val consumedCaloriers:StateFlow<Int> = _consumedCaloriers
 
     // Macros
-    val totalFat =     userData.getFat()
-    val totalCarbs =   userData.getCarbs()
-    val totalProtein = userData.getProtein()
     private val _consumedFat =     MutableStateFlow(userData.getConsumedFat())
     private val _consumedProtein = MutableStateFlow(userData.getConsumedProtein())
     private val _consumedCarbs =   MutableStateFlow(userData.getConsumedCarbs())
@@ -136,7 +144,25 @@ class MainViewModel(application: Application):AndroidViewModel(application = App
     fun rejectLastFood(){
         lastFood = null
     }
-
+    fun setTotalCalories(calories: Int) {
+        userData.setTotalCalories(calories)
+        _totalCalories.value = calories
+    }
+    fun setTotalFat(fat: Int) {
+        userData.setTotalFat(fat)
+        _totalFat.value = fat
+    }
+    fun setTotalCarbs(carbs: Int) {
+        userData.setTotalCarbs(carbs)
+        _totalCarbs.value = carbs
+    }
+    fun setTotalProtein(protein: Int) {
+        userData.setTotalProtein(protein)
+        _totalProtein.value = protein
+    }
+    fun saveUserData() {
+        userData.saveState()
+    }
     fun addConsumedCaloriers(caloriers:Int){
         userData.setConsumedCaloriers(caloriers)
         _consumedCaloriers.value+=caloriers

@@ -32,6 +32,7 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.width
+import androidx.compose.material.icons.filled.Edit
 import androidx.compose.material.icons.filled.Settings
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.runtime.collectAsState
@@ -110,25 +111,13 @@ fun HomePage(modifier: Modifier = Modifier, viewModel: MainViewModel, onSettings
             // Calories Row
             Row(modifier = Modifier.padding(5.dp)) {
                 val calories by viewModel.consumedCaloriers.collectAsState()
-                val totalCalorier = viewModel.totalCalories
+                val totalCalorier = viewModel.totalCalories.collectAsState().value
                 Text(
-                    text = "Calories:",
+                    text = "Calories: ${calories.toString()}/${totalCalorier}",
                     color = Color.White,
                     fontSize = 25.sp,
                     fontWeight = FontWeight.Bold,
                     textAlign = TextAlign.Left
-                )
-                Text(
-                    text = calories.toString(),
-                    color = Color.White,
-                    fontWeight = FontWeight.Bold,
-                    fontSize = 25.sp,
-                )
-                Text(
-                    text = "/$totalCalorier",
-                    color = Color.White,
-                    fontWeight = FontWeight.Bold,
-                    fontSize = 25.sp
                 )
             }
 
@@ -145,7 +134,7 @@ fun HomePage(modifier: Modifier = Modifier, viewModel: MainViewModel, onSettings
 
             val protein by viewModel.consumedProtein.collectAsState()
             Text(
-                text = "Protein: ${protein.toString()}/${viewModel.totalProtein}",
+                text = "Protein: ${protein.toString()}/${viewModel.totalProtein.collectAsState().value}",
                 modifier = Modifier.padding(5.dp),
                 color = Color.White,
                 fontWeight = FontWeight.Bold,
@@ -154,7 +143,7 @@ fun HomePage(modifier: Modifier = Modifier, viewModel: MainViewModel, onSettings
 
             val carbs by viewModel.consumedCarbs.collectAsState()
             Text(
-                text = "Carbs: ${carbs.toString()}/${viewModel.totalCarbs}",
+                text = "Carbs: ${carbs.toString()}/${viewModel.totalCarbs.collectAsState().value}",
                 modifier = Modifier.padding(5.dp),
                 color = Color.White,
                 fontWeight = FontWeight.Bold,
@@ -163,7 +152,7 @@ fun HomePage(modifier: Modifier = Modifier, viewModel: MainViewModel, onSettings
 
             val fat by viewModel.consumedFat.collectAsState()
             Text(
-                text = "Fat: ${fat.toString()}/${viewModel.totalFat}",
+                text = "Fat: ${fat.toString()}/${viewModel.totalFat.collectAsState().value}",
                 modifier = Modifier.padding(5.dp),
                 color = Color.White,
                 fontWeight = FontWeight.Bold,
@@ -295,30 +284,80 @@ fun SettingsPage(modifier: Modifier = Modifier, viewModel: MainViewModel) {
             fontSize = 36.sp,
             fontWeight = FontWeight.Bold
         )
-        Text(
-            text="Calories Goal: ${viewModel.totalCalories}",
-            color = Color.White,
-            fontSize = 36.sp,
-            fontWeight = FontWeight.Bold
+        // Calories and Macros Settings
+
+        //Calries Goal
+        EditableSettingRow(
+            label = "Calories Goal",
+            value = viewModel.totalCalories.collectAsState().value.toString(),
+            onValueChange = {viewModel.setTotalCalories(it.toInt())}
         )
-        Text(
-            text = "Protein Goal: ${viewModel.totalProtein}",
-            color = Color.White,
-            fontSize = 36.sp,
-            fontWeight = FontWeight.Bold
+
+        //Protein Goal
+        EditableSettingRow(
+            label = "Protein Goal",
+            value = viewModel.totalProtein.collectAsState().value.toString(),
+            onValueChange = { viewModel.setTotalProtein(it.toInt()) }
         )
-        Text(
-            text = "Carbs Goal: ${viewModel.totalCarbs}",
-            color = Color.White,
-            fontSize = 36.sp,
-            fontWeight = FontWeight.Bold
+
+        //Carbs Goal
+        EditableSettingRow(
+            label = "Carbs Goal",
+            value = viewModel.totalCarbs.collectAsState().value.toString(),
+            onValueChange = {viewModel.setTotalCarbs(it.toInt())}
         )
-        Text(
-            text = "Fat Goal: ${viewModel.totalFat}",
-            color = Color.White,
-            fontSize = 36.sp,
-            fontWeight = FontWeight.Bold
+
+        //Fat Goal
+        EditableSettingRow(
+            label = "Fat Goal",
+            value = viewModel.totalFat.collectAsState().value.toString(),
+            onValueChange = {viewModel.setTotalFat(it.toInt())}
         )
         Spacer(modifier = Modifier.height(20.dp))
+        // Back Button
+        viewModel.saveUserData() // Save settings when leaving the page
+    }
+}
+
+@Composable
+fun PenButton(onClick: () -> Unit, modifier: Modifier = Modifier) {
+    IconButton(onClick = onClick, modifier = modifier) {
+        Icon(
+            imageVector = Icons.Filled.Edit,
+            contentDescription = "Edit",
+            tint = Color.Gray
+        )
+    }
+}
+
+@Composable
+fun EditableSettingRow(label: String, value: String, onValueChange: (String) -> Unit) {
+    var isEditing by remember { mutableStateOf(false) }
+    var text by remember { mutableStateOf(value) }
+
+    Row(verticalAlignment = Alignment.CenterVertically) {
+        if (isEditing) {
+            TextField(
+                value = text,
+                onValueChange = { text = it },
+                singleLine = true,
+                modifier = Modifier.weight(1f)
+            )
+            Button(onClick = {
+                onValueChange(text)
+                isEditing = false
+            }) {
+                Text("Save")
+            }
+        } else {
+            Text(
+                text = "$label: $value",
+                color = Color.White,
+                fontSize = 30.sp,
+                fontWeight = FontWeight.Bold,
+                modifier = Modifier.weight(1f)
+            )
+            PenButton(onClick = { isEditing = true })
+        }
     }
 }
