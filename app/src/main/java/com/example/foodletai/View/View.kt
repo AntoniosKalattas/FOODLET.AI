@@ -1,5 +1,7 @@
 package com.example.foodletai.View
 
+import android.os.Build
+import androidx.annotation.RequiresApi
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
@@ -27,7 +29,9 @@ import androidx.compose.material3.Icon
 import androidx.compose.material3.TextFieldDefaults
 import androidx.compose.ui.graphics.Color
 import androidx.compose.foundation.border
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.width
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material.icons.filled.Edit
@@ -37,8 +41,11 @@ import androidx.compose.runtime.collectAsState
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.sp
 import androidx.compose.material3.ButtonDefaults
+import androidx.compose.material3.LinearProgressIndicator
+import androidx.compose.foundation.layout.IntrinsicSize
 
 
+@RequiresApi(Build.VERSION_CODES.O)
 @Composable
 fun MainScreen(modifier: Modifier = Modifier, viewModel: MainViewModel) {
     var showSettings by remember { mutableStateOf(false) }
@@ -55,6 +62,7 @@ fun MainScreen(modifier: Modifier = Modifier, viewModel: MainViewModel) {
 }
 
 
+@RequiresApi(Build.VERSION_CODES.O)
 @Composable
 fun HomePage(modifier: Modifier = Modifier, viewModel: MainViewModel, onSettingsClick: () -> Unit) {
     Column(
@@ -79,7 +87,7 @@ fun HomePage(modifier: Modifier = Modifier, viewModel: MainViewModel, onSettings
                 verticalAlignment = Alignment.CenterVertically
             ) {
                 Text(
-                    text = "FOOD LET",
+                    text = "FOODLET",
                     color = Color.White,
                     fontSize = 36.sp,
                     fontWeight = FontWeight.Bold,
@@ -97,15 +105,22 @@ fun HomePage(modifier: Modifier = Modifier, viewModel: MainViewModel, onSettings
 
             GearButton(onClick = onSettingsClick)
         }
-
+    Row(
+        modifier = Modifier
+            .fillMaxWidth()
+            .height(IntrinsicSize.Min), // Ensures columns match height
+        horizontalArrangement = Arrangement.Center
+    ) {
         // Calories and Macros Section
         Column(
             horizontalAlignment = Alignment.Start,
-            modifier = Modifier.fillMaxWidth()
+            modifier = Modifier
+                .weight(1f)
+                .fillMaxHeight()
         ) {
             // Calories Row
             Row(modifier = Modifier.padding(5.dp)) {
-                val calories by viewModel.consumedCaloriers.collectAsState()
+                val calories by viewModel.consumedCalories.collectAsState()
                 val totalCalories = viewModel.totalCalories.collectAsState().value
                 Text(
                     text = "Calories: ${calories}/${totalCalories}",
@@ -129,7 +144,7 @@ fun HomePage(modifier: Modifier = Modifier, viewModel: MainViewModel, onSettings
 
             val protein by viewModel.consumedProtein.collectAsState()
             Text(
-                text = "Protein: ${protein}/${viewModel.totalProtein.collectAsState().value}",
+                text = "Protein:\n${protein}/${viewModel.totalProtein.collectAsState().value}",
                 modifier = Modifier.padding(5.dp),
                 color = Color.White,
                 fontWeight = FontWeight.Bold,
@@ -138,7 +153,7 @@ fun HomePage(modifier: Modifier = Modifier, viewModel: MainViewModel, onSettings
 
             val carbs by viewModel.consumedCarbs.collectAsState()
             Text(
-                text = "Carbs: ${carbs}/${viewModel.totalCarbs.collectAsState().value}",
+                text = "Carbs:\n${carbs}/${viewModel.totalCarbs.collectAsState().value}",
                 modifier = Modifier.padding(5.dp),
                 color = Color.White,
                 fontWeight = FontWeight.Bold,
@@ -147,13 +162,88 @@ fun HomePage(modifier: Modifier = Modifier, viewModel: MainViewModel, onSettings
 
             val fat by viewModel.consumedFat.collectAsState()
             Text(
-                text = "Fat: ${fat}/${viewModel.totalFat.collectAsState().value}",
+                text = "Fat:\n${fat}/${viewModel.totalFat.collectAsState().value}",
                 modifier = Modifier.padding(5.dp),
                 color = Color.White,
                 fontWeight = FontWeight.Bold,
                 fontSize = 25.sp
             )
         }
+
+        // Vertical Progress Bar for Calories
+        val consumed = viewModel.consumedCalories.collectAsState().value.toFloat()
+        val total = viewModel.totalCalories.collectAsState().value.toFloat().coerceAtLeast(1f)
+        Box(
+            modifier = Modifier
+                .padding(start = 16.dp)
+                .fillMaxHeight()
+                .width(32.dp),
+            contentAlignment = Alignment.Center
+        ) {
+            VerticalProgressBar(
+                progress = consumed / total,
+                modifier = Modifier
+                    .fillMaxHeight(0.8f)
+                    .width(24.dp)
+            )
+        }
+
+        // Vertical Progress Bar for Macros
+        val consumedProtein = viewModel.consumedProtein.collectAsState().value.toFloat()
+        val totalProtein = viewModel.totalProtein.collectAsState().value.toFloat().coerceAtLeast(1f)
+        Box(
+            modifier = Modifier
+                .padding(start = 16.dp)
+                .fillMaxHeight()
+                .width(32.dp),
+            contentAlignment = Alignment.Center
+        ) {
+            VerticalProgressBar(
+                progress = consumedProtein / totalProtein,
+                modifier = Modifier
+                    .fillMaxHeight(0.8f)
+                    .width(24.dp),
+                progressColor = Color.Red
+            )
+        }
+
+        // Vertical Progress Bar for Carbs
+        val consumedCarbs = viewModel.consumedCarbs.collectAsState().value.toFloat()
+        val totalCarbs = viewModel.totalCarbs.collectAsState().value.toFloat().coerceAtLeast(1f)
+        Box(
+            modifier = Modifier
+                .padding(start = 16.dp)
+                .fillMaxHeight()
+                .width(32.dp),
+            contentAlignment = Alignment.Center
+        ) {
+            VerticalProgressBar(
+                progress = consumedCarbs / totalCarbs,
+                modifier = Modifier
+                    .fillMaxHeight(0.8f)
+                    .width(24.dp),
+                progressColor = Color.Yellow
+            )
+        }
+        // Vertical Progress Bar for Fat
+        val consumedFat = viewModel.consumedFat.collectAsState().value.toFloat()
+        val totalFat = viewModel.totalFat.collectAsState().value.toFloat().coerceAtLeast(1f)
+        Box(
+            modifier = Modifier
+                .padding(start = 16.dp)
+                .fillMaxHeight()
+                .width(32.dp),
+            contentAlignment = Alignment.Center
+        ) {
+            VerticalProgressBar(
+                progress = consumedFat / totalFat,
+                modifier = Modifier
+                    .fillMaxHeight(0.8f)
+                    .width(24.dp),
+                progressColor = Color.Green
+            )
+        }
+    }
 
         Spacer(modifier = Modifier.height(20.dp))
 
@@ -262,7 +352,6 @@ fun GearButton(onClick: () -> Unit, modifier: Modifier = Modifier) {
         )
     }
 }
-
 
 @Composable
 fun SettingsPage(modifier: Modifier = Modifier, viewModel: MainViewModel, onBack: () -> Unit) {
@@ -374,6 +463,23 @@ fun BackButton(onClick: () -> Unit, modifier: Modifier = Modifier) {
             imageVector = Icons.AutoMirrored.Filled.ArrowBack,
             contentDescription = "Back",
             tint = Color.White
+        )
+    }
+}
+
+@Composable
+fun VerticalProgressBar(progress: Float, modifier: Modifier = Modifier, backgroundColor: Color = Color.LightGray, progressColor: Color = Color.Blue) {
+    Box(
+        modifier = modifier
+            .background(backgroundColor)
+            .border(2.dp, Color.Black)
+    ) {
+        Box(
+            modifier = Modifier
+                .fillMaxWidth()
+                .fillMaxHeight(progress)
+                .align(Alignment.BottomCenter)
+                .background(progressColor)
         )
     }
 }

@@ -60,7 +60,13 @@ class userData(context: Context) {
         consumedProtein = sharedPref.getInt("consumedProtein", 0)
     }
 
-    fun resetDayData(){}
+    fun resetDayData(){
+        consumedCaloriers = 0
+        consumedFat = 0
+        consumedCarbs = 0
+        consumedProtein = 0
+        saveState() // Save the reset state
+    }
     init{
         loadState();// start loading the state
     }

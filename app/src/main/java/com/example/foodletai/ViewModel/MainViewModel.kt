@@ -6,17 +6,12 @@ import android.util.Log
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import androidx.lifecycle.viewModelScope
-import androidx.lifecycle.ViewModel
-import kotlinx.serialization.Serializable
 import kotlinx.serialization.json.Json
 import kotlinx.serialization.json.*
 import android.app.Application
-import android.content.Context
-import android.content.SharedPreferences
 import android.os.Build
 import androidx.annotation.RequiresApi
 import androidx.lifecycle.AndroidViewModel
-import androidx.lifecycle.application
 
 
 data class LastFood(
@@ -36,20 +31,20 @@ class MainViewModel(application: Application):AndroidViewModel(application = App
     val answer: StateFlow<String> = _godAnswer
 
     //calories
-    val _totalCalories = MutableStateFlow(userData.getTotalCalories())
+    private val _totalCalories = MutableStateFlow(userData.getTotalCalories())
     val totalCalories: StateFlow<Int> = _totalCalories
 
-    val _totalFat = MutableStateFlow(userData.getFat())
+    private val _totalFat = MutableStateFlow(userData.getFat())
     val totalFat: StateFlow<Int> = _totalFat
 
-    val _totalCarbs = MutableStateFlow(userData.getCarbs())
+    private val _totalCarbs = MutableStateFlow(userData.getCarbs())
     val totalCarbs: StateFlow<Int> = _totalCarbs
 
-    val _totalProtein = MutableStateFlow(userData.getProtein())
+    private val _totalProtein = MutableStateFlow(userData.getProtein())
     val totalProtein: StateFlow<Int> = _totalProtein
 
-    val _consumedCaloriers = MutableStateFlow(userData.getConsumedCaloriers())
-    val consumedCaloriers:StateFlow<Int> = _consumedCaloriers
+    private val _consumedCalories = MutableStateFlow(userData.getConsumedCaloriers())
+    val consumedCalories:StateFlow<Int> = _consumedCalories
 
     // Macros
     private val _consumedFat =     MutableStateFlow(userData.getConsumedFat())
@@ -64,7 +59,17 @@ class MainViewModel(application: Application):AndroidViewModel(application = App
 
     @RequiresApi(Build.VERSION_CODES.O)
     fun addFoodDescription(foodDescription: String) {
-        model.checkDay(userData)
+        if(!model.checkDay(userData)){
+            Log.d("API", "New Day")
+            _totalCalories.value = userData.getTotalCalories()
+            _totalFat.value = userData.getFat()
+            _totalCarbs.value = userData.getCarbs()
+            _totalProtein.value = userData.getProtein()
+            _consumedCalories.value = userData.getConsumedCaloriers()
+            _consumedFat.value = userData.getConsumedFat()
+            _consumedCarbs.value = userData.getConsumedCarbs()
+            _consumedProtein.value = userData.getConsumedProtein()
+        }
         lastFood=null
         if(model.isFoodRelated(foodDescription)) {
             model.askGod(viewModelScope, foodDescription) { result ->
@@ -104,6 +109,7 @@ class MainViewModel(application: Application):AndroidViewModel(application = App
             _godAnswer.value = "Please insert food description!"
         }
     }
+
     // Helper function to extract values from nested or flat JSON
     private fun extractValue(jsonObject: JsonObject, key: String): String {
         // First, try to find the key at the root level
@@ -131,16 +137,16 @@ class MainViewModel(application: Application):AndroidViewModel(application = App
 
     fun pushLastFood(){
         lastFood?.let { food ->
-            userData.setConsumedCaloriers(consumedCaloriers.value + food.calories.replace("g", "").toInt())
-            userData.setConsumedFat(consumedFat.value + food.fat.replace("g", "").toInt())
-            userData.setConsumedCarbs(consumedCarbs.value + food.carbs.replace("g", "").toInt())
-            userData.setConsumedProtein(consumedProtein.value + food.protein.replace("g", "").toInt())
+            userData.setConsumedCaloriers(consumedCalories.value + (food.calories.replace("g", "").toDoubleOrNull()?.toInt() ?: 0))
+            userData.setConsumedFat(consumedFat.value + (food.fat.replace("g", "").toDoubleOrNull()?.toInt() ?: 0))
+            userData.setConsumedCarbs(consumedCarbs.value + (food.carbs.replace("g", "").toDoubleOrNull()?.toInt() ?: 0))
+            userData.setConsumedProtein(consumedProtein.value + (food.protein.replace("g", "").toDoubleOrNull()?.toInt() ?: 0))
 
             //update state flow
-            _consumedCaloriers.value += food.calories.replace("g", "").toInt()
-            _consumedFat.value += food.fat.replace("g", "").toInt()
-            _consumedCarbs.value += food.carbs.replace("g", "").toInt()
-            _consumedProtein.value += food.protein.replace("g", "").toInt()
+            _consumedCalories.value += (food.calories.replace("g", "").toDoubleOrNull()?.toInt() ?: 0);
+            _consumedFat.value += (food.fat.replace("g", "").toDoubleOrNull()?.toInt() ?: 0);
+            _consumedCarbs.value += (food.carbs.replace("g", "").toDoubleOrNull()?.toInt() ?: 0);
+            _consumedProtein.value += (food.protein.replace("g", "").toDoubleOrNull()?.toInt() ?: 0);
         }
         lastFood = null
     }
@@ -166,10 +172,6 @@ class MainViewModel(application: Application):AndroidViewModel(application = App
     }
     fun saveUserData() {
         userData.saveState()
-    }
-    fun addConsumedCaloriers(caloriers:Int){
-        userData.setConsumedCaloriers(caloriers)
-        _consumedCaloriers.value+=caloriers
     }
 
 }

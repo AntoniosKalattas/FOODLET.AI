@@ -11,7 +11,7 @@ import java.time.format.TextStyle
 import java.util.Locale
 
 class Model() {
-    private var lastCheckedDate:String = ""
+    private var lastCheckedDate:String = "Monday" // Default value, will be updated on first check
 //    private val prompts:String = "Analyze this food description and return ONLY valid JSON in this exact format:\n{\n  \"weight\": \"200g\","
     private var god:ApiControl = ApiControl()
     fun askGod(scope: CoroutineScope, question: String, onResult: (String) -> Unit){
@@ -34,13 +34,17 @@ class Model() {
     }
 
     @RequiresApi(Build.VERSION_CODES.O)
-    fun checkDay(userData: userData){
+    fun checkDay(userData: userData):Boolean{
         val currentDate = LocalDate.now()
         val dayOfWeek = currentDate.dayOfWeek.getDisplayName(TextStyle.FULL, Locale.getDefault())
+        Log.d("Model", "last checked day: $lastCheckedDate")
         Log.d("Model", "Checking day: $dayOfWeek")
         if(!dayOfWeek.equals(lastCheckedDate)){
             userData.resetDayData()
             lastCheckedDate = dayOfWeek
+            userData.saveState()
+            return false;
         }
+        return true;
     }
 }
