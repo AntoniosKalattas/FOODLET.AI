@@ -17,8 +17,10 @@ import com.example.foodletai.View.HomePage
 import com.example.foodletai.ui.theme.FOODLETAITheme
 import android.Manifest
 import android.content.pm.PackageManager
+import android.os.Build
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.activity.viewModels
+import androidx.annotation.RequiresApi
 import com.example.foodletai.View.MainScreen
 import com.example.foodletai.ViewModel.MainViewModel
 import kotlin.getValue
@@ -26,6 +28,7 @@ import kotlin.getValue
 class MainActivity : ComponentActivity() {
     private val viewModel: MainViewModel by viewModels()
 
+    @RequiresApi(Build.VERSION_CODES.O)
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState);
 
