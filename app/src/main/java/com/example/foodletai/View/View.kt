@@ -16,6 +16,7 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material.icons.filled.Check
@@ -42,6 +43,7 @@ import androidx.compose.ui.text.font.Font
 import androidx.compose.ui.text.font.FontFamily
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
+import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.example.foodletai.R
@@ -240,25 +242,34 @@ fun HomePage(
                 text = "AI Response",
                 color = Color.White,
                 fontSize = 25.sp,
-                textAlign = TextAlign.Center
+                textAlign = TextAlign.Center,
+                fontFamily = mainFont
             )
 
             val godAnswer by viewModel.answer.collectAsState()
-            Text(
-                text = godAnswer.toString(),
-                modifier =
-                    Modifier.fillMaxWidth()
-                        .padding(16.dp)
-                        .background(Color(0xFF202020))
-                        .border(1.dp, Color.Gray)
-                        .padding(8.dp),
-                color = Color.White,
-                textAlign = TextAlign.Center,
-                fontWeight = FontWeight.Bold,
-                fontSize = 20.sp,
-                maxLines = 10, // Limit the number of lines to prevent excessive expansion
-                overflow = androidx.compose.ui.text.style.TextOverflow.Ellipsis
-            )
+            Box(
+                modifier = Modifier
+                    .height(180.dp)
+                    .width(300.dp)
+                    .clip(RoundedCornerShape(10.dp))
+                    .background(Color(0xFFAEAEAE), shape = androidx.compose.foundation.shape.RoundedCornerShape(10.dp))
+                    .border(1.dp, Color.Transparent, shape = androidx.compose.foundation.shape.RoundedCornerShape(10.dp)),
+                contentAlignment = Alignment.Center
+            ) {
+                Text(
+                    text = godAnswer.toString(),
+                    fontFamily = mainFont,
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(16.dp),
+                    color = Color.White,
+                    textAlign = TextAlign.Center,
+                    fontWeight = FontWeight.Bold,
+                    fontSize = 20.sp,
+                    maxLines = 10, // Limit the number of lines to prevent excessive expansion
+                    overflow = TextOverflow.Ellipsis
+                )
+            }
 
             Spacer(modifier = Modifier.height(8.dp))
 
@@ -267,7 +278,7 @@ fun HomePage(
                     onClick = { viewModel.pushLastFood() },
                     colors =
                         ButtonDefaults.buttonColors(
-                            containerColor = Color.Green,
+                            containerColor = Color(0xFFA8F7FA),
                             disabledContainerColor = Color.Gray
                         ),
                     enabled = viewModel.lastFood != null
@@ -277,7 +288,7 @@ fun HomePage(
                     onClick = { viewModel.rejectLastFood() },
                     colors =
                         ButtonDefaults.buttonColors(
-                            containerColor = Color.Red,
+                            containerColor = Color(0xFF6C81A7),
                             disabledContainerColor = Color.Gray
                         ),
                     enabled = viewModel.lastFood != null
@@ -287,30 +298,37 @@ fun HomePage(
 
         // Text Input Section - Fixed at bottom
         var foodDescription by remember { mutableStateOf("") }
-        TextField(
-            value = foodDescription,
-            onValueChange = { newFoodDescription -> foodDescription = newFoodDescription },
-            label = { Text("Insert Food Description") },
-            placeholder = { Text("Write Food Description") },
-            trailingIcon = {
-                IconButton(onClick = { viewModel.addFoodDescription(foodDescription) }) {
-                    Icon(imageVector = Icons.Filled.Check, contentDescription = "Send")
-                }
-            },
-            colors =
-                TextFieldDefaults.colors(
-                    focusedIndicatorColor = Color.Gray,
-                    unfocusedIndicatorColor = Color.LightGray,
+        val shape = androidx.compose.foundation.shape.RoundedCornerShape(10.dp)
+        Box(
+            modifier = Modifier
+                .clip(shape)
+                .background(Color.White, shape = shape)
+                .border(2.dp, Color.White, shape) // Rounded border
+        ) {
+            TextField(
+                value = foodDescription,
+                onValueChange = { newFoodDescription -> foodDescription = newFoodDescription },
+                label = { Text("Describe food") },
+                placeholder = { Text("Write Food Description") },
+                trailingIcon = {
+                    IconButton(onClick = { viewModel.addFoodDescription(foodDescription) }) {
+                        Icon(imageVector = Icons.Filled.Check, contentDescription = "Send")
+                    }
+                },
+                colors = TextFieldDefaults.colors(
+                    focusedIndicatorColor = Color.Transparent,
+                    unfocusedIndicatorColor = Color.Transparent,
                     cursorColor = Color.Black,
                     focusedLabelColor = Color.Black,
-                    unfocusedLabelColor = Color.LightGray,
-                    focusedTrailingIconColor = Color.Gray,
-                    unfocusedTrailingIconColor = Color.LightGray,
+                    unfocusedLabelColor = Color.Black,
+                    focusedTrailingIconColor = Color.Black,
+                    unfocusedTrailingIconColor = Color.Black,
                     focusedContainerColor = Color.White,
                     unfocusedContainerColor = Color.White
                 ),
-            modifier = Modifier.fillMaxWidth().padding(horizontal = 16.dp, vertical = 8.dp)
-        )
+                modifier = Modifier.fillMaxWidth().padding(horizontal = 16.dp, vertical = 8.dp)
+            )
+        }
         Spacer(modifier = Modifier.height(40.dp))
     }
 }

@@ -27,7 +27,7 @@ class MainViewModel(application: Application):AndroidViewModel(application = App
     private val userData = userData(application);
 
     //AI answer
-    private val _godAnswer = MutableStateFlow("ChatGPT-3.5")
+    private val _godAnswer = MutableStateFlow("")
     val answer: StateFlow<String> = _godAnswer
 
     //calories
