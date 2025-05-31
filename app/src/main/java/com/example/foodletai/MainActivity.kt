@@ -38,7 +38,7 @@ class MainActivity : ComponentActivity() {
             FOODLETAITheme{
                 Surface(
                     modifier = Modifier.fillMaxSize(),
-                    color = Color(0xFF191919)
+                    color = Color(0xFFD9D9D9)
                 ) {
                     MainScreen(modifier = Modifier.fillMaxSize(),viewModel = viewModel )
                 }
