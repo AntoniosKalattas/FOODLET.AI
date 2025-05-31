@@ -30,7 +30,7 @@ class ApiControl {
                 { "role": "user", "content": "$userMessage" }
             ],
             "temperature": 0.7,
-            "max_tokens": 1000
+            "max_tokens": 10000
         }
         """.trimIndent()
 
