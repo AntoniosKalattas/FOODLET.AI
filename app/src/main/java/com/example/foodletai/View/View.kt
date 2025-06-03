@@ -7,7 +7,6 @@ import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.IntrinsicSize
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxHeight
@@ -48,6 +47,11 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.example.foodletai.R
 import com.example.foodletai.ViewModel.MainViewModel
+import androidx.compose.foundation.Canvas
+import androidx.compose.foundation.layout.aspectRatio
+import androidx.compose.foundation.layout.size
+import androidx.compose.ui.graphics.StrokeCap
+import androidx.compose.ui.graphics.drawscope.Stroke
 
 val titleFont = FontFamily(Font(R.font.jersey25_regular))
 val mainFont = FontFamily(Font(R.font.jersey20_regular))
@@ -98,41 +102,37 @@ fun HomePage(
                 verticalAlignment = Alignment.CenterVertically
             ) {
                 Text(
-                    text = "FOODLET",
+                    text = "FOODLET.AI",
                     color = Color.White,
                     fontSize = 36.sp,
                     fontWeight = FontWeight.Bold,
                     textAlign = TextAlign.Center,
                     fontFamily = titleFont // Use the custom font family
                 )
-                Spacer(modifier = Modifier.width(4.dp))
-                Text(
-                    text = ".AI",
-                    color = Color.Green,
-                    fontSize = 36.sp,
-                    fontWeight = FontWeight.Bold,
-                    textAlign = TextAlign.Center,
-                    fontFamily = titleFont
-                )
             }
 
             GearButton(onClick = onSettingsClick)
         }
+
+
+        // Calories and Macros Section
         Row(
-            modifier =
-                Modifier.fillMaxWidth()
-                    .height(IntrinsicSize.Min), // Ensures columns match height
-            horizontalArrangement = Arrangement.Center
+            modifier = Modifier
+                .fillMaxWidth()
+                .height(230.dp), // This constrains the total height
+            verticalAlignment = Alignment.CenterVertically
         ) {
-            // Calories and Macros Section
             Column(
                 horizontalAlignment = Alignment.Start,
-                modifier = Modifier.weight(1f).fillMaxHeight()
+                modifier = Modifier
+                    .weight(1f)
+                    .padding(5.dp)
+                    .fillMaxHeight() // Fill the 180.dp height
             ) {
-                // Calories Row
-                Row(modifier = Modifier.padding(5.dp)) {
+                Row(verticalAlignment = Alignment.CenterVertically) {
+                    // Calories Row
                     val calories by viewModel.consumedCalories.collectAsState()
-                    val totalCalories = viewModel.totalCalories.collectAsState().value
+                    val totalCalories by viewModel.totalCalories.collectAsState()
                     Text(
                         text = "Calories: ${calories}/${totalCalories}",
                         color = Color.White,
@@ -141,9 +141,13 @@ fun HomePage(
                         textAlign = TextAlign.Left,
                         fontFamily = mainFont
                     )
+                    Spacer(modifier = Modifier.width(90.dp)) // Pushes the progress bar to the right
+                    val totalCaloriesValue by viewModel.totalCalories.collectAsState()
+                    val consumedCaloriesValue by viewModel.consumedCalories.collectAsState()
+                    CircularProgressBar(size = 60,progress = consumedCaloriesValue.toFloat() / totalCaloriesValue.toFloat())
                 }
+                Spacer(modifier = Modifier.height(5.dp))
 
-                Spacer(modifier = Modifier.height(10.dp))
                 Text(
                     text = "MACROS",
                     modifier = Modifier.padding(5.dp),
@@ -155,78 +159,114 @@ fun HomePage(
                 )
                 Spacer(modifier = Modifier.height(3.dp))
 
-                val protein by viewModel.consumedProtein.collectAsState()
-                Text(
-                    text =
-                        "Protein:${protein}/${viewModel.totalProtein.collectAsState().value}",
-                    modifier = Modifier.padding(5.dp),
-                    color = Color(0xFF6C81A7),
-                    fontWeight = FontWeight.Bold,
-                    fontSize = 25.sp,
-                    fontFamily = mainFont
-                )
 
-                val carbs by viewModel.consumedCarbs.collectAsState()
-                Text(
-                    text = "Carbs:${carbs}/${viewModel.totalCarbs.collectAsState().value}",
-                    modifier = Modifier.padding(5.dp),
-                    color = Color(0xFFA8F7FA),
-                    fontWeight = FontWeight.Bold,
-                    fontSize = 25.sp,
-                    fontFamily = mainFont
-                )
 
-                val fat by viewModel.consumedFat.collectAsState()
-                Text(
-                    text = "Fat:${fat}/${viewModel.totalFat.collectAsState().value}",
-                    modifier = Modifier.padding(5.dp),
-                    color = Color(0xFFABA8FA),
-                    fontWeight = FontWeight.Bold,
-                    fontSize = 25.sp,
-                    fontFamily = mainFont
-                )
-            }
+                // Macros Section
+                Row(
+                    modifier = Modifier.fillMaxHeight(), // Fill remaining height in the column
+                    verticalAlignment = Alignment.Top
+                ) {
+                    Column(
+                        modifier = Modifier.weight(1f)
+                    ) {
 
-            // Vertical Progress Bar for Macros
-            val consumedProtein = viewModel.consumedProtein.collectAsState().value.toFloat()
-            val totalProtein =
-                viewModel.totalProtein.collectAsState().value.toFloat().coerceAtLeast(1f)
-            Box(
-                modifier = Modifier.padding(start = 16.dp).fillMaxHeight().width(32.dp),
-                contentAlignment = Alignment.Center
-            ) {
-                VerticalProgressBar(
-                    progress = consumedProtein / totalProtein,
-                    modifier = Modifier.fillMaxHeight(0.8f).width(50.dp),
-                    progressColor = Color(0xFF6C81A7)
-                )
-            }
+                        val protein by viewModel.consumedProtein.collectAsState()
+                        val totalProteinValue by viewModel.totalProtein.collectAsState()
+                        Text(
+                            text = "Protein: ${protein}g/${totalProteinValue}g",
+                            modifier = Modifier.padding(5.dp),
+                            color = Color(0xFF6C81A7),
+                            fontWeight = FontWeight.Bold,
+                            fontSize = 22.sp, // Slightly smaller to fit better
+                            fontFamily = mainFont
+                        )
 
-            // Vertical Progress Bar for Carbs
-            val consumedCarbs = viewModel.consumedCarbs.collectAsState().value.toFloat()
-            val totalCarbs = viewModel.totalCarbs.collectAsState().value.toFloat().coerceAtLeast(1f)
-            Box(
-                modifier = Modifier.padding(start = 16.dp).fillMaxHeight().width(32.dp),
-                contentAlignment = Alignment.Center
-            ) {
-                VerticalProgressBar(
-                    progress = consumedCarbs / totalCarbs,
-                    modifier = Modifier.fillMaxHeight(0.8f).width(50.dp),
-                    progressColor = Color(0xFFA8F7FA)
-                )
-            }
-            // Vertical Progress Bar for Fat
-            val consumedFat = viewModel.consumedFat.collectAsState().value.toFloat()
-            val totalFat = viewModel.totalFat.collectAsState().value.toFloat().coerceAtLeast(1f)
-            Box(
-                modifier = Modifier.padding(start = 16.dp).fillMaxHeight().width(32.dp),
-                contentAlignment = Alignment.Center
-            ) {
-                VerticalProgressBar(
-                    progress = consumedFat / totalFat,
-                    modifier = Modifier.fillMaxHeight(0.8f).width(50.dp),
-                    progressColor = Color(0xFFABA8FA)
-                )
+                        val carbs by viewModel.consumedCarbs.collectAsState()
+                        val totalCarbsValue by viewModel.totalCarbs.collectAsState()
+                        Text(
+                            text = "Carbs: ${carbs}g/${totalCarbsValue}g",
+                            modifier = Modifier.padding(5.dp),
+                            color = Color(0xFFA8F7FA),
+                            fontWeight = FontWeight.Bold,
+                            fontSize = 22.sp, // Slightly smaller to fit better
+                            fontFamily = mainFont
+                        )
+
+                        val fat by viewModel.consumedFat.collectAsState()
+                        val totalFatValue by viewModel.totalFat.collectAsState()
+                        Text(
+                            text = "Fat: ${fat}g/${totalFatValue}g",
+                            modifier = Modifier.padding(5.dp),
+                            color = Color(0xFFABA8FA),
+                            fontWeight = FontWeight.Bold,
+                            fontSize = 22.sp, // Slightly smaller to fit better
+                            fontFamily = mainFont
+                        )
+                    }
+
+                    // Progress Bars Section
+                    Row(
+                        modifier = Modifier
+                            .height(120.dp) // Fixed height for progress bars
+                            .padding(start = 16.dp),
+                        horizontalArrangement = Arrangement.spacedBy(8.dp),
+                        verticalAlignment = Alignment.Bottom
+                    ) {
+                        // Protein Progress Bar
+                        val consumedProtein by viewModel.consumedProtein.collectAsState()
+                        val totalProtein by viewModel.totalProtein.collectAsState()
+                        Box(
+                            modifier = Modifier
+                                .width(20.dp)
+                                .height(120.dp), // Fixed height instead of fillMaxHeight
+                            contentAlignment = Alignment.BottomCenter
+                        ) {
+                            VerticalProgressBar(
+                                progress = if (totalProtein > 0) (consumedProtein.toFloat() / totalProtein.toFloat()).coerceIn(0f, 1f) else 0f,
+                                modifier = Modifier
+                                    .width(20.dp)
+                                    .height(120.dp),
+                                progressColor = Color(0xFF6C81A7)
+                            )
+                        }
+
+                        // Carbs Progress Bar
+                        val consumedCarbs by viewModel.consumedCarbs.collectAsState()
+                        val totalCarbs by viewModel.totalCarbs.collectAsState()
+                        Box(
+                            modifier = Modifier
+                                .width(20.dp)
+                                .height(120.dp), // Fixed height instead of fillMaxHeight
+                            contentAlignment = Alignment.BottomCenter
+                        ) {
+                            VerticalProgressBar(
+                                progress = if (totalCarbs > 0) (consumedCarbs.toFloat() / totalCarbs.toFloat()).coerceIn(0f, 1f) else 0f,
+                                modifier = Modifier
+                                    .width(20.dp)
+                                    .height(120.dp),
+                                progressColor = Color(0xFFA8F7FA)
+                            )
+                        }
+
+                        // Fat Progress Bar
+                        val consumedFat by viewModel.consumedFat.collectAsState()
+                        val totalFat by viewModel.totalFat.collectAsState()
+                        Box(
+                            modifier = Modifier
+                                .width(20.dp)
+                                .height(120.dp), // Fixed height instead of fillMaxHeight
+                            contentAlignment = Alignment.BottomCenter
+                        ) {
+                            VerticalProgressBar(
+                                progress = if (totalFat > 0) (consumedFat.toFloat() / totalFat.toFloat()).coerceIn(0f, 1f) else 0f,
+                                modifier = Modifier
+                                    .width(20.dp)
+                                    .height(120.dp),
+                                progressColor = Color(0xFFABA8FA)
+                            )
+                        }
+                    }
+                }
             }
         }
 
@@ -245,11 +285,11 @@ fun HomePage(
                 textAlign = TextAlign.Center,
                 fontFamily = mainFont
             )
-
+            Spacer(modifier = Modifier.height(10.dp))
             val godAnswer by viewModel.answer.collectAsState()
             Box(
                 modifier = Modifier
-                    .height(180.dp)
+                    .height(150.dp)
                     .width(300.dp)
                     .clip(RoundedCornerShape(10.dp))
                     .background(Color(0xFFAEAEAE), shape = androidx.compose.foundation.shape.RoundedCornerShape(10.dp))
@@ -271,7 +311,7 @@ fun HomePage(
                 )
             }
 
-            Spacer(modifier = Modifier.height(8.dp))
+            Spacer(modifier = Modifier.height(35.dp))
 
             Row {
                 Button(
@@ -282,7 +322,7 @@ fun HomePage(
                             disabledContainerColor = Color.Gray
                         ),
                     enabled = viewModel.lastFood != null
-                ) { Text(text = "Correct") }
+                ) { Text(text = "Push", fontFamily = mainFont) }
                 Spacer(modifier = Modifier.width(10.dp))
                 Button(
                     onClick = { viewModel.rejectLastFood() },
@@ -292,7 +332,7 @@ fun HomePage(
                             disabledContainerColor = Color.Gray
                         ),
                     enabled = viewModel.lastFood != null
-                ) { Text(text = "Wrong") }
+                ) { Text(text = "Re Try", fontFamily = mainFont) }
             }
         }
 
@@ -301,6 +341,8 @@ fun HomePage(
         val shape = androidx.compose.foundation.shape.RoundedCornerShape(10.dp)
         Box(
             modifier = Modifier
+                .width(300.dp)
+                .padding(horizontal = 10.dp, vertical = 30.dp)
                 .clip(shape)
                 .background(Color.White, shape = shape)
                 .border(2.dp, Color.White, shape) // Rounded border
@@ -309,9 +351,12 @@ fun HomePage(
                 value = foodDescription,
                 onValueChange = { newFoodDescription -> foodDescription = newFoodDescription },
                 label = { Text("Describe food") },
-                placeholder = { Text("Write Food Description") },
+                placeholder = { Text("Describe food") },
                 trailingIcon = {
-                    IconButton(onClick = { viewModel.addFoodDescription(foodDescription) }) {
+                    IconButton(onClick = {
+                        viewModel.addFoodDescription(foodDescription)
+                        foodDescription = "" // Clear input after submission
+                    }) {
                         Icon(imageVector = Icons.Filled.Check, contentDescription = "Send")
                     }
                 },
@@ -326,7 +371,7 @@ fun HomePage(
                     focusedContainerColor = Color.White,
                     unfocusedContainerColor = Color.White
                 ),
-                modifier = Modifier.fillMaxWidth().padding(horizontal = 16.dp, vertical = 8.dp)
+                modifier = Modifier.fillMaxWidth().padding(horizontal = 20.dp, vertical = 8.dp)
             )
         }
         Spacer(modifier = Modifier.height(40.dp))
@@ -358,41 +403,75 @@ fun SettingsPage(modifier: Modifier = Modifier, viewModel: MainViewModel, onBack
                 text = "Settings",
                 color = Color.White,
                 fontSize = 36.sp,
-                fontWeight = FontWeight.Bold
+                fontWeight = FontWeight.Bold,
+                fontFamily = titleFont
             )
         }
-        // Calories and Macros Settings
 
+        Spacer(modifier = Modifier.height(30.dp))
+
+        // Calories and Macros Settings
         // Calories Goal
         EditableSettingRow(
             label = "Calories Goal",
             value = viewModel.totalCalories.collectAsState().value.toString(),
-            onValueChange = { viewModel.setTotalCalories(it.toInt()) }
+            onValueChange = { newValue ->
+                try {
+                    viewModel.setTotalCalories(newValue.toInt())
+                } catch (e: NumberFormatException) {
+                    // Handle invalid input gracefully
+                }
+            }
         )
+
+        Spacer(modifier = Modifier.height(15.dp))
 
         // Protein Goal
         EditableSettingRow(
-            label = "Protein Goal",
+            label = "Protein Goal (g)",
             value = viewModel.totalProtein.collectAsState().value.toString(),
-            onValueChange = { viewModel.setTotalProtein(it.toInt()) }
+            onValueChange = { newValue ->
+                try {
+                    viewModel.setTotalProtein(newValue.toInt())
+                } catch (e: NumberFormatException) {
+                    // Handle invalid input gracefully
+                }
+            }
         )
+
+        Spacer(modifier = Modifier.height(15.dp))
 
         // Carbs Goal
         EditableSettingRow(
-            label = "Carbs Goal",
+            label = "Carbs Goal (g)",
             value = viewModel.totalCarbs.collectAsState().value.toString(),
-            onValueChange = { viewModel.setTotalCarbs(it.toInt()) }
+            onValueChange = { newValue ->
+                try {
+                    viewModel.setTotalCarbs(newValue.toInt())
+                } catch (e: NumberFormatException) {
+                    // Handle invalid input gracefully
+                }
+            }
         )
+
+        Spacer(modifier = Modifier.height(15.dp))
 
         // Fat Goal
         EditableSettingRow(
-            label = "Fat Goal",
+            label = "Fat Goal (g)",
             value = viewModel.totalFat.collectAsState().value.toString(),
-            onValueChange = { viewModel.setTotalFat(it.toInt()) }
+            onValueChange = { newValue ->
+                try {
+                    viewModel.setTotalFat(newValue.toInt())
+                } catch (e: NumberFormatException) {
+                    // Handle invalid input gracefully
+                }
+            }
         )
+
         Spacer(modifier = Modifier.height(20.dp))
-        // Back Button
-        viewModel.saveUserData() // Save settings when leaving the page
+        // Save settings when leaving the page
+        viewModel.saveUserData()
     }
 }
 
@@ -408,29 +487,53 @@ fun EditableSettingRow(label: String, value: String, onValueChange: (String) -> 
     var isEditing by remember { mutableStateOf(false) }
     var text by remember { mutableStateOf(value) }
 
-    Row(verticalAlignment = Alignment.CenterVertically) {
+    // Update text when value changes externally
+    if (!isEditing && text != value) {
+        text = value
+    }
+
+    Row(
+        verticalAlignment = Alignment.CenterVertically,
+        modifier = Modifier.fillMaxWidth().padding(horizontal = 16.dp)
+    ) {
         if (isEditing) {
             TextField(
                 value = text,
                 onValueChange = { text = it },
                 singleLine = true,
-                modifier = Modifier.weight(1f)
+                modifier = Modifier.weight(1f),
+                colors = TextFieldDefaults.colors(
+                    focusedContainerColor = Color.White,
+                    unfocusedContainerColor = Color.White,
+                    focusedTextColor = Color.Black,
+                    unfocusedTextColor = Color.Black
+                )
             )
+            Spacer(modifier = Modifier.width(8.dp))
             Button(
                 onClick = {
                     onValueChange(text)
                     isEditing = false
-                }
-            ) { Text("Save") }
+                },
+                colors = ButtonDefaults.buttonColors(
+                    containerColor = Color(0xFFA8F7FA)
+                )
+            ) {
+                Text("Save", color = Color.Black, fontFamily = mainFont)
+            }
         } else {
             Text(
                 text = "$label: $value",
                 color = Color.White,
-                fontSize = 30.sp,
+                fontSize = 24.sp, // Slightly smaller for better fit
                 fontWeight = FontWeight.Bold,
-                modifier = Modifier.weight(1f)
+                modifier = Modifier.weight(1f),
+                fontFamily = mainFont
             )
-            PenButton(onClick = { isEditing = true })
+            PenButton(onClick = {
+                text = value // Ensure text is up to date when starting edit
+                isEditing = true
+            })
         }
     }
 }
@@ -463,10 +566,46 @@ fun VerticalProgressBar(
         Box(
             modifier =
                 Modifier.fillMaxWidth()
-                    .width(500.dp)
-                    .fillMaxHeight(progress)
+                    .fillMaxHeight(progress.coerceIn(0f, 1f)) // Ensure progress is between 0 and 1
                     .align(Alignment.BottomCenter)
                     .background(progressColor, shape)
+        )
+    }
+}
+
+
+@Composable
+fun CircularProgressBar(
+    progress: Float, // 0.0 to 1.0
+    modifier: Modifier = Modifier,
+    size: Int = 200,
+    strokeWidth: Float = size * 0.15f,
+    backgroundColor: Color = Color.LightGray,
+    progressColor: Color = Color.Green,
+    backgroundFillColor: Color = Color.White
+) {
+    Canvas(modifier = modifier.size(size.dp).aspectRatio(1f)) {
+        // Draw background fill circle
+        drawCircle(
+            color = backgroundFillColor,
+            radius = this.size.minDimension / 2f
+        )
+
+        // Draw background circle
+        drawArc(
+            color = backgroundColor,
+            startAngle = -90f,
+            sweepAngle = 360f,
+            useCenter = false,
+            style = Stroke(width = strokeWidth, cap = StrokeCap.Round)
+        )
+        // Draw progress arc
+        drawArc(
+            color = progressColor,
+            startAngle = -90f,
+            sweepAngle = 360f * progress.coerceIn(0f, 1f),
+            useCenter = false,
+            style = Stroke(width = strokeWidth, cap = StrokeCap.Round)
         )
     }
 }

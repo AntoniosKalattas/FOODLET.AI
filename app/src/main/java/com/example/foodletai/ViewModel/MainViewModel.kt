@@ -59,6 +59,7 @@ class MainViewModel(application: Application):AndroidViewModel(application = App
 
     @RequiresApi(Build.VERSION_CODES.O)
     fun addFoodDescription(foodDescription: String) {
+        Log.d("API", "Adding food description: $foodDescription")
         if(!model.checkDay(userData)){
             Log.d("API", "New Day")
             _totalCalories.value = userData.getTotalCalories()
