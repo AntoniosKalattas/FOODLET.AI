@@ -16,7 +16,7 @@ import android.os.Build
 import androidx.activity.viewModels
 import androidx.annotation.RequiresApi
 import com.example.foodletai.view.MainScreen
-import com.example.foodletai.viewmodel.MainViewModel
+import com.example.foodletai.myviewmodel.MainViewModel
 import kotlin.getValue
 
 class MainActivity : ComponentActivity() {

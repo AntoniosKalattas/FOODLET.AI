@@ -10,7 +10,7 @@ import okhttp3.RequestBody.Companion.toRequestBody
 import org.json.JSONObject
 
 class ApiControl {
-    private val apiKey: String = "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"
+    private val apiKey: String = "insert_your_api_key_here" // Replace with your actual OpenRouter API key
     private val client = OkHttpClient()
 
     // Common working models on OpenRouter

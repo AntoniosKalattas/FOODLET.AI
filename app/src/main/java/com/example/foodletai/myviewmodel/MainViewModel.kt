@@ -1,7 +1,7 @@
-package com.example.foodletai.viewmodel
+package com.example.foodletai.myviewmodel
 
-import com.example.foodletai.model.Model
-import com.example.foodletai.model.UserData
+import com.example.foodletai.myModel.Model
+import com.example.foodletai.myModel.UserData
 import android.util.Log
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
@@ -104,11 +104,15 @@ class MainViewModel(application: Application):AndroidViewModel(application = App
 
                 } catch (e: Exception) {
                     Log.e("API", "Error parsing JSON: ${e.message}")
+                    _loadingState.value = false
+
                     _godAnswer.value = "Error parsing response"
                 }
             }
         }
         else{
+            _loadingState.value = false
+
             _godAnswer.value = "Please insert food description!"
         }
     }

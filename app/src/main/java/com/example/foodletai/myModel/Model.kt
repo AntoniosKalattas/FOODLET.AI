@@ -1,4 +1,4 @@
-package com.example.foodletai.model
+package com.example.foodletai.myModel
 
 import android.os.Build
 import com.example.foodletai.api.ApiControl
@@ -47,3 +47,4 @@ class Model{
         return true
     }
 }
+

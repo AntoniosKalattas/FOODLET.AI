@@ -1,4 +1,4 @@
-package com.example.foodletai.model
+package com.example.foodletai.myModel
 
 import android.content.Context
 
